@@ -37,10 +37,23 @@
                 @Html.DisplayFor(modelItem => item.isReserved)
             </td>
             <td>
-                <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a> |
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @if (Context.User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a> 
+                        <a>|</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a>|</a>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a>|</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                    @if (Context.User.IsInRole("Customer"))
+                    {
+                        <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
+                        <a>|</a>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+
+                    }
             </td>
         </tr>
 }
