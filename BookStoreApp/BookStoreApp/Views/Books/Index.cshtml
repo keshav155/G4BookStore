@@ -5,10 +5,20 @@
 }
 
 <h1>Index</h1>
+@if (Context.User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["AlertMessage"]
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -21,26 +31,59 @@
             <th>
                 @Html.DisplayNameFor(model => model.isReserved)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReservationNumber)
+            </th>    
+            <th>
+                @Html.DisplayNameFor(model => model.ReservedBy)
+            </th>
+
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.isReserved)
+                </td>
+                @if (item.ReservedBy == Context.User.Identity.Name || item.ReservedBy == null)
+                {
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.ReservationNumber)
             </td>
-             <td>
-                @Html.DisplayFor(modelItem => item.Id)
-             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.isReserved)
-            </td>
-            <td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayName("********")
+                    </td>
+                }
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservedBy)
+                </td>
+
+                <td>
                     @if (Context.User.IsInRole("Admin"))
                     {
-                        <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a> 
+                        if (item.ReservationNumber != null && !(item.ReservedBy != Context.User.Identity.Name))
+                        {
+
+                            <a asp-action="UnReserve" asp-route-id="@item.Id">UnReserve</a>
+                            <a>|</a>
+                        }
+                        if (item.ReservationNumber == null)
+                        {
+                        <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
                         <a>|</a>
+                        }
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         <a>|</a>
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
@@ -49,13 +92,21 @@
                     }
                     @if (Context.User.IsInRole("Customer"))
                     {
+                        if (item.ReservationNumber != null && !(item.ReservedBy != Context.User.Identity.Name))
+                        {
+                            <a asp-action="UnReserve" asp-route-id="@item.Id">UnReserve</a>
+                            <a>|</a>
+                        }
+                        if (item.ReservationNumber == null)
+                        {
                         <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
                         <a>|</a>
+                        }
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
 
                     }
-            </td>
-        </tr>
-}
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
