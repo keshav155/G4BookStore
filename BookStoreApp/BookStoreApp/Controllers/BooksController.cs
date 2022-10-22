@@ -10,6 +10,7 @@ using BookStoreApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using BookStoreApp.Data.Migrations;
 
 namespace BookStoreApp.Controllers
 {
@@ -70,11 +71,11 @@ namespace BookStoreApp.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Id,isReserved,ReservationNumber,ReservedBy")] Book book)
+        public async Task<IActionResult> Create([Bind("Name,Id,isReserved,ReservationNumber,ReservedBy,BookUID")] Book book)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(book);
+                _context.Book.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -99,10 +100,10 @@ namespace BookStoreApp.Controllers
         }
 
         // POST: Books/Edit/5
-        [Authorize(Roles = "Admin,Customer")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy")] Book book)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy,BookUID")] Book book)
         {
             if (id != book.Id)
             {
@@ -113,7 +114,11 @@ namespace BookStoreApp.Controllers
             {
                 try
                 {
-                    _context.Update(book);
+                    _context.Book.Attach(book);
+
+                    _context.Entry(book).Property(x => x.Name).IsModified = true;
+                    _context.Entry(book).Property(x => x.BookUID).IsModified = true;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -152,7 +157,7 @@ namespace BookStoreApp.Controllers
         [Authorize(Roles ="Admin,Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reserve(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy")] Book book)
+        public async Task<IActionResult> Reserve(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy,BookUID")] Book book)
         {
             if (id != book.Id)
             {
@@ -173,7 +178,6 @@ namespace BookStoreApp.Controllers
                     book.isReserved = true;
 
                     _context.Entry(book).Property(x => x.isReserved).IsModified = true;
-                    _context.Entry(book).Property(x => x.ReservationNumber).IsModified = true;
                     _context.Entry(book).Property(x => x.ReservationNumber).IsModified = true;
 
                     TempData["AlertMessage"] = "Book has been reserved successfully. Your booking number is " + ReservationNumber;
@@ -217,7 +221,7 @@ namespace BookStoreApp.Controllers
         [Authorize(Roles = "Admin,Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnReserve(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy")] Book book)
+        public async Task<IActionResult> UnReserve(string id, [Bind("Name,Id,isReserved,ReservationNumber,ReservedBy,BookUID")] Book book)
         {
             if (id != book.Id)
             {

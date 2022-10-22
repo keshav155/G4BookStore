@@ -7,6 +7,7 @@
         public bool isReserved { get; set; }
         public Nullable<int> ReservationNumber { get; set; }
         public string? ReservedBy { get; set; }
+        public string BookUID { get; set; }
         public Book()
         {
 

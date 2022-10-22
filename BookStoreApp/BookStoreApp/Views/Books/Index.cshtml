@@ -4,11 +4,11 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Group 4 Bookstore</h1>
 @if (Context.User.IsInRole("Admin"))
 {
     <p>
-        <a asp-action="Create">Create New</a>
+        <a asp-action="Create">Add a new book</a>
     </p>
 }
 
@@ -23,11 +23,15 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.DisplayNameFor(model => model.BookUID)
             </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.isReserved)
             </th>
@@ -37,6 +41,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.ReservedBy)
             </th>
+            <th>
+                @Html.DisplayName("Available Actions")
+            </th>
 
         </tr>
     </thead>
@@ -45,11 +52,15 @@
         {
             <tr>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(modelItem => item.BookUID)
                 </td>
+ 
                 <td>
                     @Html.DisplayFor(modelItem => item.isReserved)
                 </td>
@@ -105,6 +116,7 @@
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
 
                     }
+                
                 </td>
             </tr>
         }
